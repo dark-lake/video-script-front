@@ -1,3 +1,4 @@
+<!-- video-script-creator/src/views/Home.vue -->
 <template>
   <div class="home">
     <div class="header">
@@ -32,6 +33,9 @@
           <div class="meta">
             <span class="duration">时长: {{ project.duration }}</span>
             <span class="tags" :title="project.tags">标签: {{ project.tags }}</span>
+            <span class="elapsed-time" :class="getElapsedTimeClass(project.createTime)">
+              {{ calculateElapsedTime(project.createTime) }}
+            </span>
           </div>
           <div class="time-info">
             <div class="time-item">创建时间: {{ formatDateTime(project.createTime) }}</div>
@@ -149,6 +153,44 @@ const formatDateTime = (dateTimeStr) => {
   const minutes = String(date.getMinutes()).padStart(2, '0');
   const seconds = String(date.getSeconds()).padStart(2, '0');
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+};
+
+const calculateElapsedTime = (createTime) => {
+  const now = new Date();
+  const createdAt = new Date(createTime);
+  const elapsed = now - createdAt; // 毫秒
+
+  const seconds = Math.floor(elapsed / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (days > 3) {
+    return `${days}天${hours % 24}小时之前`;
+  } else if (days > 2) {
+    return `${days}天${hours % 24}小时之前`;
+  } else if (days > 1) {
+    return `${days}天${hours % 24}小时之前`;
+  } else {
+    return `${hours}小时之前`;
+  }
+};
+
+const getElapsedTimeClass = (createTime) => {
+  const now = new Date();
+  const createdAt = new Date(createTime);
+  const elapsed = now - createdAt; // 毫秒
+  const days = Math.floor(elapsed / (1000 * 60 * 60 * 24));
+
+  if (days > 3) {
+    return 'elapsed-time-red-dark'; // 超过3天，深红色
+  } else if (days > 2) {
+    return 'elapsed-time-red-medium'; // 2-3天，红色
+  } else if (days > 1) {
+    return 'elapsed-time-red-light'; // 1-2天，浅红色
+  } else {
+    return 'elapsed-time-red-very-light'; // 1天内，最浅红色
+  }
 };
 
 export default {
@@ -283,7 +325,9 @@ export default {
       total,
       handleCurrentChange,
       searchKeyword,
-      handleSearch
+      handleSearch,
+      calculateElapsedTime,
+      getElapsedTimeClass
     };
   }
 };
@@ -405,6 +449,33 @@ export default {
   text-overflow: ellipsis;
   width: 100%;
   text-align: center;
+}
+
+.elapsed-time {
+  color: white;
+  font-size: 0.9em;
+  border-radius: 8px;
+  padding: 0px;
+  width: 50%;
+  display: block;
+  text-align: center;
+  margin: 0 auto
+}
+
+.elapsed-time-red-very-light {
+  background-color: #ffcccc; /* 最浅红色 */
+}
+
+.elapsed-time-red-light {
+  background-color: #ff9999; /* 浅红色 */
+}
+
+.elapsed-time-red-medium {
+  background-color: #ff6666; /* 红色 */
+}
+
+.elapsed-time-red-dark {
+  background-color: #ff3333; /* 深红色 */
 }
 
 .time-info {
@@ -563,4 +634,4 @@ button:hover {
     text-align: center;
   }
 }
-</style> 
+</style>

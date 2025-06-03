@@ -1,13 +1,8 @@
+<!-- video-script-creator/src/components/EditScript.vue -->
 <template>
   <div class="app-container">
     <div class="content-container">
-      <div class="page-header">
-        <h1 class="main-title content-title">编辑视频脚本</h1>
-        <el-button type="primary" @click="openProjectList" class="list-button">
-          <el-icon class="button-icon"><Collection /></el-icon>
-          打开脚本管理
-        </el-button>
-      </div>
+      <h1 class="main-title content-title">编辑视频脚本</h1>
       
       <div class="dashboard">
         <!-- 视频信息卡片 -->
@@ -15,6 +10,14 @@
           <el-card class="info-card" :body-style="{ padding: '0' }">
             <div class="info-header">
               <span class="card-title">视频信息</span>
+              <el-button 
+                type="primary" 
+                @click="openProjectList" 
+                class="list-button"
+              >
+                <el-icon class="button-icon"><Collection /></el-icon>
+                打开脚本管理
+              </el-button>
             </div>
             
             <div class="info-content">
@@ -51,6 +54,13 @@
         
         <!-- 导出和保存按钮 -->
         <div class="action-buttons-container">
+          <el-button 
+            type="success" 
+            @click="exportDialogue" 
+            class="action-button"
+          >
+            导出台词
+          </el-button>
           <el-button type="success" @click="exportMarkdown" class="action-button">
             <el-icon class="button-icon"><Download /></el-icon>
             导出视频脚本
@@ -293,7 +303,6 @@ const formatDateTime = (dateTimeStr) => {
   const hours = String(date.getHours()).padStart(2, '0');
   const minutes = String(date.getMinutes()).padStart(2, '0');
   const seconds = String(date.getSeconds()).padStart(2, '0');
-  console.log(year,month,day,hours,minutes,seconds)
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
@@ -511,7 +520,6 @@ const saveScript = async () => {
       tags: scriptForm.tags,
       shots: formattedShots
     };
-    console.log(scriptData)
     await api.saveScript(scriptData);
     ElMessage.success('保存成功');
   } catch (error) {
@@ -530,6 +538,16 @@ const saveScript = async () => {
 // 打开脚本管理页面
 const openProjectList = () => {
   window.open('/', '_blank');
+};
+
+// 导出台词
+const exportDialogue = () => {
+  const dialogues = shots.value.map(shot => shot.dialogue).filter(dialogue => dialogue);
+  const blob = new Blob([dialogues.join('\n')], { type: 'text/plain' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `${scriptForm.title}.txt`;
+  link.click();
 };
 
 // 导出为Markdown
@@ -563,6 +581,9 @@ const exportMarkdown = () => {
   link.click()
 }
 </script>
+
+
+
 
 <style scoped>
 .app-container {
